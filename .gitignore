@@ -1,23 +1,8 @@
-build
-buildCache
-buildCache.lock
-
-.gradle/
-.settings/
-
-.DS_Store
-
-freeline
-freeline.py
-.buckd
-buck-out
-
-#python byte code
-*.pyc
-
-infer-out
-
-tools/JsBridgeDebug/node_modules
-
-#android studio tools Layout Inspector
-captures/
+*.iml
+.gradle
+/local.properties
+/.idea
+/DS_Store
+/build
+/captures
+.externalNativeBuild
