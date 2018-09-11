@@ -3,16 +3,19 @@ package com.teambition.task.ganttchart
 import android.content.Context
 import android.graphics.Canvas
 import android.support.v4.view.GestureDetectorCompat
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Scroller
+import java.lang.Math.abs
 
 class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTaskList>,
                    val timeSpanGenerator: TimeSpanGenerator, val taskClickListener: TaskClickListener):
     GestureDetector.SimpleOnGestureListener() {
 
-    var eps = 0.0f
+    var epsx = 0.0f
+    var epsy = 0.0f
     val style: Style
     val drawer: ElementDrawer
     val touchDetector: GestureDetectorCompat
@@ -30,9 +33,10 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
 
     fun render(canvas: Canvas) {
         if (myScroller.computeScrollOffset()) {
-            eps = myScroller.currX.toFloat()
+            epsx = myScroller.currX.toFloat()
+            epsy = myScroller.currY.toFloat()
         }
-        drawer.draw(canvas, eps)
+        drawer.draw(canvas, epsx, epsy)
         if (myScroller.computeScrollOffset()) {
             view.invalidate()
         }
@@ -49,7 +53,8 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
 
     override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float): Boolean {
 
-        myScroller.fling(eps.toInt(), 0, -velocityX.toInt(), 0, 0, drawer.epsLimit.toInt(), 0, 1)
+        myScroller.fling(epsx.toInt(), epsy.toInt(), -velocityX.toInt(), -velocityY.toInt(),
+        0, drawer.epsxLimit.toInt(), 0, drawer.epsyLimit.toInt())
 
         view.invalidate()
 
@@ -57,11 +62,18 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
     }
 
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
-        eps += distanceX
-        if (eps < 0.0f) {
-            eps = 0.0f
-        } else if (eps > drawer.epsLimit) {
-            eps = drawer.epsLimit
+        epsx += distanceX
+        epsy += distanceY
+        Log.v("HERE", "distancey = $distanceY   epsy = $epsy   limit = ${drawer.epsyLimit}")
+        if (epsx < 0.0f) {
+            epsx = 0.0f
+        } else if (epsx > drawer.epsxLimit) {
+            epsx = drawer.epsxLimit
+        }
+        if (epsy < 0.0f) {
+            epsy = 0.0f
+        } else if (epsy > drawer.epsyLimit) {
+            epsy = drawer.epsyLimit
         }
         view.invalidate()
         return super.onScroll(e1, e2, distanceX, distanceY)
@@ -71,7 +83,7 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
         if (e == null) {
             return super.onSingleTapConfirmed(e)
         }
-        taskClickListener.onTaskClick(drawer.findTask(e.x + eps, e.y))
+        taskClickListener.onTaskClick(drawer.findTask(e.x + epsx, e.y + epsy))
         return super.onSingleTapConfirmed(e)
     }
 

@@ -36,7 +36,7 @@ class DayTimeSpanGenerator: TimeSpanGenerator {
 
     override fun getTimePlace(time: Date, startTime: Date): Float {
         val tmpTime = getTime(time)
-        var tmp = ((tmpTime.timeInMillis - getTime(startTime).timeInMillis) / (1000 * 3600 * 24)).toFloat()
+        var tmp = ((tmpTime.timeInMillis - getTime(startTime).timeInMillis) / (1000 * 3600 * 24).toFloat())
         val tmpHour = tmpTime.get(Calendar.HOUR)
         if ((tmpHour > 9) and (tmpHour < 18)) {
             tmp += (tmpHour - 9) / 9.0f
@@ -107,7 +107,8 @@ class MonthTimeSpanGenerator: TimeSpanGenerator {
         var ans = 0.0f
         val tmpTime = getTime(time)
         val tmpStartTime = getTime(startTime)
-        while (tmpTime.time != tmpStartTime.time) {
+        while (!((tmpTime.get(Calendar.YEAR) == tmpStartTime.get(Calendar.YEAR)) and
+                (tmpTime.get(Calendar.MONTH) == tmpStartTime.get(Calendar.MONTH)))) {
             ans += 1.0f
             tmpStartTime.add(Calendar.MONTH, 1)
         }

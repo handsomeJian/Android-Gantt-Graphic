@@ -1,6 +1,7 @@
 package com.teambition.task.ganttchart
 
 import android.graphics.Canvas
+import android.util.Log
 import java.util.*
 
 class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpanGenerator: TimeSpanGenerator) {
@@ -13,9 +14,11 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
 
     var length = 0.0f
     var height = 0.0f
-    var epsLimit = 0.0f
+    var epsxLimit = 0.0f
+    var epsyLimit = 0.0f
 
-    var width = 0.0f
+    var canvasWidth = 0.0f
+    var canvasHeight = 0.0f
 
     init {
         updateTimeScale()
@@ -25,7 +28,7 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
     private fun updateSize() {
         size = 0
         for (i in list) {
-            size += i.size
+            size += i.size + 1
         }
         height = (size + 1) * style.lineHeight
     }
@@ -55,7 +58,11 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
 
         length = timeSpanGenerator.getTimePlace(endTime!!, startTime!!) * timeSpanGenerator.getUnitDp()
 
-        epsLimit = style.dpToPx(length) - width
+        epsxLimit = style.dpToPx(length) - canvasWidth
+        epsyLimit = style.dpToPx(height) - canvasHeight
+        if (epsyLimit < 0.0f) {
+            epsyLimit = 0.0f
+        }
 
         nowTime = Date(System.currentTimeMillis())
     }
@@ -65,9 +72,16 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
         val today = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, this.getActualMinimum(Calendar.HOUR_OF_DAY))
             set(Calendar.MINUTE, this.getActualMinimum(Calendar.MINUTE))
+            set(Calendar.SECOND, 0)
         }
         if ((today.time >= startTime) and (today.time <= endTime)) {
+            if (timeSpanGenerator.getTimePlace(today.time, startTime!!) == 12.0f) {
+                Log.v("Here", "haha")
+            }
             val tmp1 = timeSpanGenerator.getTimePlace(today.time, startTime!!) * timeSpanGenerator.getUnitDp()
+            if (timeSpanGenerator.getTimePlace(today.time, startTime!!) == 12.0f) {
+                Log.v("Here", "haha")
+            }
             today.add(Calendar.DATE, 1)
             val tmp2 = timeSpanGenerator.getTimePlace(today.time, startTime!!) * timeSpanGenerator.getUnitDp()
             Painter.drawTodayBackground(canvas, style.dpToPx(tmp1), style.dpToPx(tmp2), style.dpToPx(height), style.backBlockPaint)
@@ -177,9 +191,11 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
         }
     }
 
-    fun draw(canvas: Canvas, eps: Float) {
+    fun draw(canvas: Canvas, epsx: Float, epsy: Float) {
 
-        width = canvas.width.toFloat()
+        canvasWidth = canvas.width.toFloat()
+        canvasHeight = canvas.height.toFloat()
+
         updateSize()
         updateTimeScale()
 
@@ -187,11 +203,11 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
             return
         }
 
-        if (height < style.pxToDp(canvas.height.toFloat())) {
-            height = style.pxToDp(canvas.height.toFloat())
+        if (height < style.pxToDp(canvasHeight)) {
+            height = style.pxToDp(canvasHeight)
         }
 
-        canvas.translate(-eps,0.0f)
+        canvas.translate(-epsx, -epsy)
 
         drawBackground(canvas)
 
