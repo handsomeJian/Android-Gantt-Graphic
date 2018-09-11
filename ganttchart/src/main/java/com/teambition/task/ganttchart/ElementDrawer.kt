@@ -147,9 +147,9 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
 
         Painter.drawText(canvas, task.name + if (task.executor != null) {
             " ~ ${task.executor}"
-        } else {
+            } else {
             " "
-        },
+            },
             style.dpToPx(endPlace + style.textTaskBlank),
             style.dpToPx((nowLine + 1) * style.lineHeight - style.textLineBlank),
             style.textPaint)
@@ -183,6 +183,10 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
             } else {
                 style.taskPaint
             })
+        Painter.drawText(canvas, taskList.name,
+            style.dpToPx(endPlace + style.textTaskBlank),
+            style.dpToPx((preSize + 1) * style.lineHeight - style.textLineBlank),
+            style.textPaint)
 
         var nowSize = preSize + 1
         for (i in taskList.list) {
@@ -215,6 +219,32 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
         for (i in list) {
             drawTaskList(canvas, i, nowSize)
             nowSize += i.size + 1
+        }
+    }
+
+    fun getInitPlace(canvas: Canvas): Float {
+        canvasWidth = canvas.width.toFloat()
+        canvasHeight = canvas.height.toFloat()
+        updateSize()
+        updateTimeScale()
+        if (endTime == null || startTime == null) {
+            return 0.0f
+        }
+        if (height < style.pxToDp(canvasHeight)) {
+            height = style.pxToDp(canvasHeight)
+        }
+        val today = Calendar.getInstance()
+        when {
+            today.time < startTime -> return 0.0f
+            today.time > endTime -> return epsxLimit
+            else -> {
+                val tmp = style.dpToPx((timeSpanGenerator.getTimePlace(today.time, startTime!!) - 2) * timeSpanGenerator.getUnitDp())
+                when {
+                    tmp < 0.0f -> return 0.0f
+                    tmp > epsxLimit -> return epsxLimit
+                    else -> return tmp
+                }
+            }
         }
     }
 

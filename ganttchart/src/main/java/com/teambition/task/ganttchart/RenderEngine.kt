@@ -14,7 +14,7 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
                    val timeSpanGenerator: TimeSpanGenerator, val taskClickListener: TaskClickListener):
     GestureDetector.SimpleOnGestureListener() {
 
-    var epsx = 0.0f
+    var epsx = -1.0f
     var epsy = 0.0f
     val style: Style
     val drawer: ElementDrawer
@@ -32,6 +32,9 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
     }
 
     fun render(canvas: Canvas) {
+        if (epsx == -1.0f) {
+            epsx = drawer.getInitPlace(canvas)
+        }
         if (myScroller.computeScrollOffset()) {
             epsx = myScroller.currX.toFloat()
             epsy = myScroller.currY.toFloat()
@@ -64,7 +67,7 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
     override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float): Boolean {
         epsx += distanceX
         epsy += distanceY
-        Log.v("HERE", "distancey = $distanceY   epsy = $epsy   limit = ${drawer.epsyLimit}")
+        //Log.v("HERE", "distancey = $distanceY   epsy = $epsy   limit = ${drawer.epsyLimit}")
         if (epsx < 0.0f) {
             epsx = 0.0f
         } else if (epsx > drawer.epsxLimit) {

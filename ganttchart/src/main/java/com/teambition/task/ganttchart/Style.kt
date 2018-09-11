@@ -10,7 +10,7 @@ class Style(private val scale: Float) {
     val textSize = 22.0f    // dp
     val taskLineBlank = (lineHeight - taskHeight) / 2.0f
     val groupLineBlank = (lineHeight - groupHeight) / 2.0f
-    val textLineBlank = 8.0f
+    val textLineBlank = 11.0f
     val unsettleTaskLength = 36.0f
     val textTaskBlank = 15.0f
     val minTaskWidth = 5.0f

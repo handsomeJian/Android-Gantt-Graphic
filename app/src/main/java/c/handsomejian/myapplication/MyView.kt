@@ -37,7 +37,7 @@ class MyView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
         if (context != null) {
             myDraw = RenderEngine(context, this, listOf(tmpTaskList, tmpTaskList2, tmpTaskList3, tmpTaskList4, tmpTaskList5, tmpTaskList6, tmpTaskList7),
-                MonthTimeSpanGenerator(),
+                WeekTimeSpanGenerator(),
                 object : RenderEngine.TaskClickListener {
                     override fun onTaskClick(id: String?) {
                         Log.v("HERE", "$id")
