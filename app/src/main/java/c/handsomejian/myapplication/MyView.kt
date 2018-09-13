@@ -23,8 +23,10 @@ class MyView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
         endTime.add(Calendar.DATE, -3)
         startTime.add(Calendar.DATE, -4)
         Log.v("HERE", "${startTime.time}    ${endTime.time}")
-        var tmpTask2 = GanttTask("2", "kkk", false, startTime.time, null, null)
-        var tmpTask3 = GanttTask("3", "ooo", false, startTime.time, endTime.time, "handsomeJian")
+        //var tmpTask2 = GanttTask("2", "kkk", false, startTime.time, null, null)
+        var tmpTask2 = GanttTask("2", "kkk", false, null, startTime.time, null)
+        //var tmpTask3 = GanttTask("3", "ooo", false, startTime.time, endTime.time, "handsomeJian")
+        var tmpTask3 = GanttTask("3", "ooo", false, null, endTime.time, "handsomeJian")
 
         var tmpTaskList = GanttTaskList("4", "g_list", listOf(tmpTask1, tmpTask2, tmpTask3))
         var tmpTaskList2 = GanttTaskList("5", "h_list", listOf(tmpTask1, tmpTask2, tmpTask3))

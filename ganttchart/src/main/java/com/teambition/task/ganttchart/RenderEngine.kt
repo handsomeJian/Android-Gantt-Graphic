@@ -22,7 +22,7 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
     val myScroller = Scroller(context)
 
     interface TaskClickListener {
-        fun onTaskClick(id: String?)
+        fun onTaskClick(id: String)
     }
 
     init {
@@ -86,7 +86,10 @@ class RenderEngine(val context: Context, val view: View, var tasks: List<GanttTa
         if (e == null) {
             return super.onSingleTapConfirmed(e)
         }
-        taskClickListener.onTaskClick(drawer.findTask(e.x + epsx, e.y + epsy))
+        val tmp = drawer.findTask(e.x + epsx, e.y + epsy)
+        if (tmp != null) {
+            taskClickListener.onTaskClick(tmp)
+        }
         return super.onSingleTapConfirmed(e)
     }
 

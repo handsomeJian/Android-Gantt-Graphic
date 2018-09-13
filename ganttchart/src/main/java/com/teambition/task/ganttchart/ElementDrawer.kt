@@ -100,9 +100,9 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
         }
     }
 
-    private fun drawTask(canvas: Canvas, task: GanttTask, nowLine: Int) {
+    private fun drawTask(canvas: Canvas, task: GanttTask, nowLine: Int): Int {
         if ((task.startTime == null) and (task.endTime == null)) {
-            return
+            return 0
         }
         var startPlace: Float
         var endPlace: Float
@@ -153,24 +153,25 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
             style.dpToPx(endPlace + style.textTaskBlank),
             style.dpToPx((nowLine + 1) * style.lineHeight - style.textLineBlank),
             style.textPaint)
+        return 1
     }
 
-    private fun drawTaskList(canvas: Canvas, taskList: GanttTaskList, preSize: Int) {
+    private fun drawTaskList(canvas: Canvas, taskList: GanttTaskList, preSize: Int): Int {
 
         if ((taskList.startTime == null) or (taskList.endTime == null)) {
-            return
+            return 0
         }
 
         var startPlace = timeSpanGenerator.getTimePlace(taskList.startTime!!, startTime!!)
         var endPlace = timeSpanGenerator.getTimePlace(taskList.endTime!!, startTime!!)
+        startPlace *= timeSpanGenerator.getUnitDp()
+        endPlace *= timeSpanGenerator.getUnitDp()
         if (!taskList.startSettle) {
-            startPlace += style.unsettleTaskLength
+            startPlace -= style.unsettleTaskLength
         }
         if (!taskList.endSettle) {
             endPlace += style.unsettleTaskLength
         }
-        startPlace *= timeSpanGenerator.getUnitDp()
-        endPlace *= timeSpanGenerator.getUnitDp()
         if (endPlace - startPlace < style.minTaskWidth) {
             endPlace = startPlace + style.minTaskWidth
         }
@@ -190,9 +191,9 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
 
         var nowSize = preSize + 1
         for (i in taskList.list) {
-            drawTask(canvas, i, nowSize)
-            nowSize ++
+            nowSize += drawTask(canvas, i, nowSize)
         }
+        return nowSize - preSize
     }
 
     fun draw(canvas: Canvas, epsx: Float, epsy: Float) {
@@ -217,8 +218,7 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
 
         var nowSize = 1
         for (i in list) {
-            drawTaskList(canvas, i, nowSize)
-            nowSize += i.size + 1
+            nowSize += drawTaskList(canvas, i, nowSize)
         }
     }
 
@@ -251,10 +251,12 @@ class ElementDrawer(var list: List<GanttTaskList>, val style: Style, val timeSpa
     fun findTask(x: Float, y: Float): String? {
         var nowSize = 1
         for (i in list) {
+            if ((i.startTime == null) and (i.endTime == null)) {
+                continue
+            }
             nowSize += 1
             for (task in i.list) {
                 if ((task.startTime == null) and (task.endTime == null)) {
-                    nowSize += 1
                     continue
                 }
                 val startPlace: Float

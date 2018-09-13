@@ -26,6 +26,7 @@ class DayTimeSpanGenerator: TimeSpanGenerator {
         set(Calendar.HOUR_OF_DAY, this.getActualMinimum(Calendar.HOUR_OF_DAY))
         set(Calendar.MINUTE, this.getActualMinimum(Calendar.MINUTE))
         set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
     }
 
     override fun getUnitDp() = 80.0f
@@ -62,14 +63,15 @@ class WeekTimeSpanGenerator: TimeSpanGenerator {
         set(Calendar.HOUR_OF_DAY, this.getActualMinimum(Calendar.HOUR_OF_DAY))
         set(Calendar.MINUTE, this.getActualMinimum(Calendar.MINUTE))
         set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
         set(Calendar.DAY_OF_WEEK, this.firstDayOfWeek)
     }
 
-    override fun getUnitDp() = 256.0f
+    override fun getUnitDp() = 135.0f
 
-    override fun getLeftTimePadding(time: Date): Date = getTime(time).apply{ add(Calendar.DATE, -14) }.time
+    override fun getLeftTimePadding(time: Date): Date = getTime(time).apply{ add(Calendar.DATE, -7) }.time
 
-    override fun getRightTimePadding(time: Date): Date = getTime(time).apply{ add(Calendar.DATE, 7) }.time
+    override fun getRightTimePadding(time: Date): Date = getTime(time).apply{ add(Calendar.DATE, 14) }.time
 
     override fun getTimePlace(time: Date, startTime: Date): Float {
         return  ((time.time - getTime(startTime).timeInMillis) / (1000 * 3600 * 24 * 7).toFloat())
@@ -94,10 +96,11 @@ class MonthTimeSpanGenerator: TimeSpanGenerator {
         set(Calendar.HOUR_OF_DAY, this.getActualMinimum(Calendar.HOUR_OF_DAY))
         set(Calendar.MINUTE, this.getActualMinimum(Calendar.MINUTE))
         set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
         set(Calendar.DAY_OF_MONTH, 1)
     }
 
-    override fun getUnitDp() = 588.0f
+    override fun getUnitDp() = 200.0f
 
     override fun getLeftTimePadding(time: Date): Date = getTime(time).apply{ add(Calendar.MONTH, -1) }.time
 
